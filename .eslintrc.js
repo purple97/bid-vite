@@ -9,12 +9,9 @@ module.exports = {
     extends: ['eslint:recommended'],
     // plugins: ['react'],
     parserOptions: {
-        ecmaVersion: 2015,
-        sourceType: 'module',
-        ecmaFeatures: {
-            experimentalObjectRestSpread: true,
-            modules: true
-        }
+        tsconfigRootDir: __dirname,
+        project: './tsconfig.json',
+        createDefaultProgram: true
     },
     globals: {
         _: true
@@ -124,4 +121,4 @@ module.exports = {
         'import/newline-after-import': ['off'],
         yoda: ['error']
     }
-};
+}
