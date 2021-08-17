@@ -8,7 +8,7 @@ import less from 'less';
 
 /* 获取入口文件路径
  */
-function getLessEntry(dirPathArray: string[]) {
+function getLessEntry(dirPathArray) {
     return dirPathArray.map(fileName => {
         fileName = path.resolve(process.cwd(), fileName);
         return fileName.replace(/\.htm(l)$/, '.less');
@@ -17,7 +17,7 @@ function getLessEntry(dirPathArray: string[]) {
 
 /* less转css
  */
-function lessToCss(lessFilePath: string) {
+function lessToCss(lessFilePath) {
     let fileCss = fs.readFileSync(lessFilePath, 'utf-8');
     return less.render(fileCss, { paths: [path.dirname(lessFilePath)], compress: true }).then(
         output => {
@@ -28,9 +28,9 @@ function lessToCss(lessFilePath: string) {
     );
 }
 
-export default function (dirPathArray: string[], callback: () => void) {
+export default function (dirPathArray, callback) {
     let entrys = getLessEntry(dirPathArray);
-    let taskArray: any[] = [];
+    let taskArray = [];
     entrys.forEach(filePath => {
         if (fs.existsSync(filePath)) {
             taskArray.push(lessToCss(filePath));

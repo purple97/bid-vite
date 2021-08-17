@@ -1,18 +1,18 @@
+// import { nodeResolve } from '@rollup/plugin-node-resolve';
+// import builtins from 'rollup-plugin-node-builtins';
+
 export default {
-    entry: './src/index.ts',
     target: 'node',
+    nodeVersion: 12,
     esm: { type: 'babel', minify: true },
     cjs: { type: 'babel', minify: true },
     umd: { file: 'index', minFile: true },
     runtimeHelpers: true,
-    extraBabelPlugins: [
-        [
-            'babel-plugin-import',
-            {
-                libraryName: 'lodash',
-                libraryDirectory: '',
-                camel2DashComponentName: false
-            }
-        ]
-    ]
-}
+    extraRollupPlugins: [
+        // builtins()
+        // nodeResolve()
+    ],
+    nodeResolveOpts: {
+        preferBuiltins: true
+    }
+};

@@ -9,7 +9,7 @@ export default () => {
     const appVersion = version;
     console.log(colors.blue('正在检测远端版本...'));
     console.log(colors.green(`当前版本为：${appVersion}`));
-    checkNpm('bid', function (err, _version, moduleInfo) {
+    checkNpm('bid', (err, _version, moduleInfo) => {
         if (err) {
             console.log(colors.red('检测失败...'));
             console.error(err);

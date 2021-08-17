@@ -21,11 +21,12 @@
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         "moduleResolution": "node",
-        "typeRoots": ["src/typings", "node_modules/@types"],
+        "typeRoots": ["typings", "node_modules/@types"],
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "removeComments": true
     },
+    "include": ["./src"],
     "exclude": ["node_modules", "examples"]
 }

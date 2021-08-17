@@ -12,7 +12,7 @@
  * @param {string} version2
  * @return {number}
  */
-const compareVersion = function (version1: string, version2: string): number {
+const compareVersion = function (version1, version2) {
     let vers1 = version1.split('.'),
         vers2 = version2.split('.');
     const long = vers1.length >= vers2.length ? vers1.length : vers2.length;

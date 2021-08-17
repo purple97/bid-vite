@@ -1,22 +1,11 @@
+/*  */
 import path from 'path';
 import getConfigJson from './get-config-json';
-//@ts-ignore
 import Repo from 'git-tools';
-// import getAlias from './get-alias'
 import getBuildInfo from './get-build-info';
 import setConfigFileVersion from './set-config-file-version';
 
-// import projectGenerator from './project-generator'
-// import requireFileToJSON from './require-file-to-json'
-
-import { IUserConfig } from '../interfaces';
-
 class Utils {
-    git: any;
-    userConfig: IUserConfig;
-    getUserConfig: IUserConfig;
-    __parentdir: string | null;
-    getBuildInfo: (version: string) => { autoGetEntry: any; autoGetHtml: any };
     constructor() {
         this.userConfig = this.getUserConfig = getConfigJson('config.json');
         this.getBuildInfo = getBuildInfo;
@@ -32,13 +21,12 @@ class Utils {
             get cwdPath() {
                 return process.cwd();
             },
-            get parentDir(): string {
-                //@ts-ignore
+            get parentDir() {
                 return this.__parentdir || path.join(__dirname, '../../');
             }
         };
     }
-    setParentDir(_path: string) {
+    setParentDir(_path) {
         this.__parentdir = _path;
     }
 }

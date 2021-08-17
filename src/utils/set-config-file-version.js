@@ -1,17 +1,15 @@
 import fs from 'fs';
 import path from 'path';
-//@ts-ignore
 import Repo from 'git-tools';
 import colors from 'cli-color';
-import { IUserConfig } from '../interfaces';
 
 const CWDPATH = process.cwd();
 let gitRopo = new Repo(process.cwd());
 
-const setVersion = (userConfig: IUserConfig) => () => {
+const setVersion = userConfig => () => {
     let config = userConfig;
     let version = config.version;
-    gitRopo.currentBranch((error: null | any, b: string): any => {
+    gitRopo.currentBranch((error, b) => {
         if (!error) {
             let reg = /^daily\/\d+\.\d+\.\d+$/g;
             if (reg.test(b)) {
@@ -42,16 +40,16 @@ const setVersion = (userConfig: IUserConfig) => () => {
     });
 };
 
-const setVersionThunk = (userConfig: IUserConfig) => (tagBranch: string, callback: any) => {
+const setVersionThunk = userConfig => (tagBranch, callback) => {
     let config = userConfig;
     let version = config.version;
-    gitRopo.remotes((err: null | any, remotes: any[]) => {
+    gitRopo.remotes((err, remotes) => {
         if (!err) {
             let gitRemotes = remotes[0].url;
             config.remotes = gitRemotes;
             if (!tagBranch) {
                 // 非tag发布
-                gitRopo.currentBranch((error: null | any, b: any) => {
+                gitRopo.currentBranch((error, b) => {
                     if (b === null) {
                         console.log(colors.magentaBright(`当前处于tag分支，将按照config.json配置中git的版本进行构建：${version}`));
                         let filename = path.join(CWDPATH, 'config.json');
@@ -75,7 +73,7 @@ const setVersionThunk = (userConfig: IUserConfig) => (tagBranch: string, callbac
                                 config.version = branch;
                                 let filename = path.join(CWDPATH, 'config.json');
                                 let data = JSON.stringify(config);
-                                fs.writeFile(filename, data, (err: any | null) => {
+                                fs.writeFile(filename, data, err => {
                                     if (!err) {
                                         console.log(colors.green('修改成功！'));
                                         // return config;
@@ -99,7 +97,7 @@ const setVersionThunk = (userConfig: IUserConfig) => (tagBranch: string, callbac
                 // tag发布
                 let hasTagFlag = false;
                 // todo bid tag version => 由tagBranch传递 publish/0.0.2
-                gitRopo.tags((error: any | null, branches: any[]) => {
+                gitRopo.tags((error, branches) => {
                     for (let index = 0; index < branches.length; index++) {
                         let item = branches[index];
                         if (item.name == tagBranch) {
@@ -139,7 +137,7 @@ const setVersionThunk = (userConfig: IUserConfig) => (tagBranch: string, callbac
         }
     });
 };
-export default (userConfig: IUserConfig) => ({
+export default userConfig => ({
     setConfigVersion: setVersion(userConfig),
     setConfigVersionThunk: setVersionThunk(userConfig)
 });

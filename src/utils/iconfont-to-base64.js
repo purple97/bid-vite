@@ -14,7 +14,7 @@ class IconfontToBase64 {
         program.option('-i, --input', '带有iconfont的文件').option('-o, --output', '可选，输出文件');
         program.parse(process.argv);
     }
-    parseUrl(text: string) {
+    parseUrl(text) {
         let urlRegex = /(https?:?)?(\/\/at.alicdn.com\/t\/font_.*\.ttf)/;
         if (urlRegex.exec(text)) {
             return 'http:' + RegExp.$2;
@@ -22,7 +22,7 @@ class IconfontToBase64 {
         return false;
     }
 
-    parseLine(line: string) {
+    parseLine(line) {
         return new Promise((resolve, reject) => {
             let template = '    src: url(data:font/truetype;charset=utf-8;base64,<>) format("truetype");';
             let url = this.parseUrl(line);

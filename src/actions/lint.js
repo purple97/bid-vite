@@ -4,24 +4,22 @@
 //@ts-ignore
 import align from 'wide-align';
 import colors from 'cli-color';
-//@ts-ignore
 import inquirer from 'inquirer';
-//@ts-ignore
-import { CLIEngine } from 'eslint';
+import { ESLint } from 'eslint';
 import getUserConfig from '../utils/get-config-json';
 import getBuildInfo from '../utils/get-build-info';
 // import { IUserConfigWithBuildInfo } from '../interfaces'
 
-const printMessage = (results: any[]) => {
+const printMessage = results => {
     let errorCount = 0;
     let warningCount = 0;
-    results.forEach((res: any) => {
+    results.forEach(res => {
         if (res.errorCount != 0) {
             console.log('\n', res.filePath);
             errorCount += res.errorCount;
             warningCount += res.warningCount;
             console.group();
-            res.messages.forEach((mgs: any) => {
+            res.messages.forEach(mgs => {
                 console.info(
                     colors.red(align.center(mgs.line + ':' + mgs.column, 9)),
                     align.left(mgs.message, 64),
@@ -38,10 +36,10 @@ const printMessage = (results: any[]) => {
         console.info(colors.yellow('未检测到代码错误，非常棒~ '));
     }
 };
-const runLint = (dirPaths: string[]) => {
-    const cli = new CLIEngine();
-    const report = cli.executeOnFiles(dirPaths);
-    printMessage(report.results);
+const runLint = async dirPaths => {
+    const cli = new ESLint();
+    const results = await cli.lintFiles(dirPaths);
+    printMessage(results);
 };
 
 const Lint = async () => {
@@ -61,8 +59,8 @@ const Lint = async () => {
     if (answers.selectedEntry.length == 0) {
         return console.log(colors.red('没有选择任何页面,检测结束'));
     }
-    const dirPaths: string[] = [];
-    answers.selectedEntry.forEach((path: string) => {
+    const dirPaths = [];
+    answers.selectedEntry.forEach(path => {
         let dirPathJSX = path.replace(/[.\w]*\/index$/, '**/*.js*');
         let dirPathTSX = path.replace(/[.\w]*\/index$/, '**/*.ts*');
         dirPaths.push(dirPathJSX, dirPathTSX);

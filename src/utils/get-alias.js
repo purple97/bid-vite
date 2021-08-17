@@ -1,11 +1,10 @@
 import path from 'path';
-import { IAlias } from '../typings';
 
-const getAlias = (userAlias: string[]): any => {
+const getAlias = userAlias => {
     /*
      *	生成webpack resolve.alias 别名配置
      */
-    let alias: IAlias = {
+    let alias = {
         // 别名
         '@br': path.join(process.cwd(), './src/c/')
     };

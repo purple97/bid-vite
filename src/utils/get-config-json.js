@@ -4,12 +4,12 @@
 import fs from 'fs';
 import path from 'path';
 import colors from 'cli-color';
-import { IUserConfig } from '../interfaces';
+// import { IUserConfig } from '../interfaces';
 
-const getUserConfig = (fileName?: string): IUserConfig => {
-    const _fileName: string = fileName || 'config.json';
+const getUserConfig = fileName => {
+    const _fileName = fileName || 'config.json';
     const configPath = path.join(process.cwd(), _fileName);
-    let configJSON: IUserConfig;
+    let configJSON;
     try {
         configJSON = fs.existsSync(configPath) ? JSON.parse(fs.readFileSync(configPath, 'utf8')) : configPath;
     } catch (e) {
