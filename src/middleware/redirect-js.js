@@ -9,8 +9,6 @@
 export default function (req, res, next) {
     if (/\/@cdnhost[\s\S]+@version/g.test(req.path)) {
         const filePath = req.path.replace(/\/@cdnhost[\s\S]+@version/g, '');
-        // req.path = filePath;
-        // next();
         res.redirect(filePath);
         return;
     }

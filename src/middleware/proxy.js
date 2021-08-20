@@ -10,7 +10,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 /**
  * @description: 实现一个简易的代理, 用法参考webpack-dev-server;
- * @param {Objdect | Object[]}
+ * @param {Object | Object[]}
  * @return: middleware[]
  */
 export default options => {

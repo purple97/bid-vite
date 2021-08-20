@@ -5,8 +5,8 @@
  * @LastEditTime: 2020-07-16 16:08:49
  * @Description: 检测html中的js路径是否正确
  * @用法:
- * const checkPathInHtmlMiddlewar = require('./chack-path-in-html');
- * app.get('/index.html', checkPathInHtmlMiddlewar);
+ * const checkPathInHtmlMiddleware = require('./check-path-in-html');
+ * app.get('/index.html', checkPathInHtmlMiddleware);
  */
 import fs from 'fs';
 import path from 'path';
@@ -38,7 +38,7 @@ const checkHtmlFilePath = filePath => {
     return isExist;
 };
 
-const ChackPathInHtml = (req, res, next) => {
+const CheckPathInHtml = (req, res, next) => {
     if (checkHtmlFilePath(req.path)) {
         // res.render('.' + req.path, { htmlWebpackPlugin: null });
         next();
@@ -47,4 +47,4 @@ const ChackPathInHtml = (req, res, next) => {
     }
 };
 
-export default ChackPathInHtml;
+export default CheckPathInHtml;
