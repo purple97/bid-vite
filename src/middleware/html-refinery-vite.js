@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Middleware } from '..';
+import { getScriptsElementByHtmlFile } from './check-path-in-html.js';
 
 function RefineryScripts(Scripts, config) {
     Scripts.each((i, script) => {
@@ -32,7 +32,7 @@ export const HtmlRefineryVite = (options = {}) => {
     return (req, res, next) => {
         const htmlPath = config.rootPath + req.path;
         if (fs.existsSync(htmlPath)) {
-            let { html } = Middleware.getScriptsElementByHtmlFile(req.path);
+            let { html } = getScriptsElementByHtmlFile(req.path);
             let Scripts = html('script');
             RefineryScripts(Scripts, {
                 path: req.path,

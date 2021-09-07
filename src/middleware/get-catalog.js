@@ -1,11 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import Utils from '../utils/index';
+import source from '../utils/html-inline-style-rem';
 
 let style = '';
 let rem = '';
-style = fs.readFileSync(path.resolve(__dirname, '../../public/body_style.css'), 'utf-8');
-rem = fs.readFileSync(path.resolve(__dirname, '../../public/rem.js'), 'utf-8');
+style = source.style;
+rem = source.remjs;
+// style = fs.readFileSync(path.resolve(__dirname, '../../public/body_style.css'), 'utf-8');
+// rem = fs.readFileSync(path.resolve(__dirname, '../../public/rem.js'), 'utf-8');
 let mata = `<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
             <meta name="apple-mobile-web-app-capable" content="yes"/>
             <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
@@ -22,6 +25,7 @@ if (rem) {
 let FilterPath = [/^\./, /node_modules/];
 
 function GetCatalog(req, res, next) {
+    // console.log('GetCatalog middleware!');
     let _path = req.path;
     let _html = style + '<ul><li><a href="../">...</a></li>';
     let re = /.[a-zA-Z0-9_]+$/;
