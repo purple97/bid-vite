@@ -1,5 +1,5 @@
 import colors from 'cli-color';
-import { version } from '../../package.json';
+import { version, name } from '../../package.json';
 import checkNpm from '../utils/check-npm';
 
 /*
@@ -9,7 +9,7 @@ export default () => {
     const appVersion = version;
     console.log(colors.blue('正在检测远端版本...'));
     console.log(colors.green(`当前版本为：${appVersion}`));
-    checkNpm('bid', (err, _version, moduleInfo) => {
+    checkNpm(name, (err, _version, moduleInfo) => {
         if (err) {
             console.log(colors.red('检测失败...'));
             console.error(err);

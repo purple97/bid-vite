@@ -40,97 +40,109 @@ const setVersion = userConfig => () => {
     });
 };
 
+/*
+分支发布
+*/
+const PublishByDefault = (config, callback) => {
+    const { version } = config;
+    gitRopo.currentBranch((error, b) => {
+        if (b === null) {
+            console.log(colors.magentaBright(`当前处于tag分支，将按照config.json配置中git的版本进行构建：${version}`));
+            let filename = path.join(config.cwdpath, 'config.json');
+            let data = JSON.stringify(config);
+            fs.writeFile(filename, data, err => {
+                if (!err) {
+                    console.log(colors.green('修改成功！'));
+                    // return config;
+                    return callback(err, config);
+                } else {
+                    console.log(colors.red('config.json写入失败，请检查该文件'));
+                    return callback(err, false);
+                }
+            });
+        } else {
+            let reg = /^daily\/\d+\.\d+\.\d+$/g; // 只允许发布daily/x.y.z分支的代码，为保证安全，不支持tag回滚发布
+            if (reg.test(b)) {
+                let branch = b.split('daily/')[1];
+                if (branch != version) {
+                    console.log(colors.blue('将config.version由', version, '替换为', branch));
+                    config.version = branch;
+                    let filename = path.join(config.cwdpath, 'config.json');
+                    let data = JSON.stringify(config);
+                    fs.writeFile(filename, data, err => {
+                        if (!err) {
+                            console.log(colors.green('修改成功！'));
+                            // return config;
+                            return callback(err, config);
+                        } else {
+                            console.log(colors.red('config.json写入失败，请检查该文件'));
+                            return callback(err, false);
+                        }
+                    });
+                } else {
+                    console.log(colors.green('当前git环境正常：' + branch));
+                    return callback(error, config);
+                }
+            } else {
+                console.log(colors.yellow('请在daily分支下进行发布：daily/x.y.z；'));
+                return callback(error, false);
+            }
+        }
+    });
+};
+
+/*
+tag发布
+*/
+const PublishByTag = (config, tagBranch, callback) => {
+    const { version } = config;
+    let hasTagFlag = false;
+    // todo bid tag version => 由tagBranch传递 publish/0.0.2
+    gitRopo.tags((error, branches) => {
+        for (let index = 0; index < branches.length; index++) {
+            let item = branches[index];
+            if (item.name == tagBranch) {
+                hasTagFlag = true;
+            }
+        }
+        if (hasTagFlag) {
+            console.log(colors.green('Git中存在当前tag分支。'));
+        } else {
+            console.log(colors.yellow('Git中不存在当前tag分支，请注意！'));
+        }
+        let pubreg = /^publish\/\d+\.\d+\.\d+$/g; // publish/x.y.z tag分支发布
+        if (pubreg.test(tagBranch)) {
+            // TODO 待测试！！
+            let branch = tagBranch.split('publish/')[1];
+            console.log(colors.blue('将config.version由', version, '替换为', branch));
+            config.version = branch;
+            let filename = path.join(config.cwdpath, 'config.json');
+            let data = JSON.stringify(config);
+            fs.writeFile(filename, data, err => {
+                if (!err) {
+                    console.log(colors.green('修改成功！'));
+                    return callback(err, config);
+                } else {
+                    console.log(colors.red('config.json写入失败，请检查该文件'));
+                    return callback(err, false);
+                }
+            });
+        } else {
+            console.log(colors.yellow('请在publish分支下进行发布：publish/x.y.z；'));
+            return callback(error, false);
+        }
+    });
+};
+
 const setVersionThunk = userConfig => (tagBranch, callback) => {
-    let config = userConfig;
-    let version = config.version;
     gitRopo.remotes((err, remotes) => {
         if (!err) {
             let gitRemotes = remotes[0].url;
-            config.remotes = gitRemotes;
+            userConfig.remotes = gitRemotes;
             if (!tagBranch) {
-                // 非tag发布
-                gitRopo.currentBranch((error, b) => {
-                    if (b === null) {
-                        console.log(colors.magentaBright(`当前处于tag分支，将按照config.json配置中git的版本进行构建：${version}`));
-                        let filename = path.join(CWDPATH, 'config.json');
-                        let data = JSON.stringify(config);
-                        fs.writeFile(filename, data, err => {
-                            if (!err) {
-                                console.log(colors.green('修改成功！'));
-                                // return config;
-                                return callback(err, config);
-                            } else {
-                                console.log(colors.red('config.json写入失败，请检查该文件'));
-                                return callback(err, false);
-                            }
-                        });
-                    } else {
-                        let reg = /^daily\/\d+\.\d+\.\d+$/g; // 只允许发布daily/x.y.z分支的代码，为保证安全，不支持tag回滚发布
-                        if (reg.test(b)) {
-                            let branch = b.split('daily/')[1];
-                            if (branch != version) {
-                                console.log(colors.blue('将config.version由', version, '替换为', branch));
-                                config.version = branch;
-                                let filename = path.join(CWDPATH, 'config.json');
-                                let data = JSON.stringify(config);
-                                fs.writeFile(filename, data, err => {
-                                    if (!err) {
-                                        console.log(colors.green('修改成功！'));
-                                        // return config;
-                                        return callback(err, config);
-                                    } else {
-                                        console.log(colors.red('config.json写入失败，请检查该文件'));
-                                        return callback(err, false);
-                                    }
-                                });
-                            } else {
-                                console.log(colors.green('当前git环境正常：' + branch));
-                                return callback(error, config);
-                            }
-                        } else {
-                            console.log(colors.yellow('请在daily分支下进行发布：daily/x.y.z；'));
-                            return callback(error, false);
-                        }
-                    }
-                });
+                PublishByDefault({ ...userConfig, cwdpath: CWDPATH }, callback);
             } else {
-                // tag发布
-                let hasTagFlag = false;
-                // todo bid tag version => 由tagBranch传递 publish/0.0.2
-                gitRopo.tags((error, branches) => {
-                    for (let index = 0; index < branches.length; index++) {
-                        let item = branches[index];
-                        if (item.name == tagBranch) {
-                            hasTagFlag = true;
-                        }
-                    }
-                    if (hasTagFlag) {
-                        console.log(colors.green('Git中存在当前tag分支。'));
-                    } else {
-                        console.log(colors.yellow('Git中不存在当前tag分支，请注意！'));
-                    }
-                    let pubreg = /^publish\/\d+\.\d+\.\d+$/g; // publish/x.y.z tag分支发布
-                    if (pubreg.test(tagBranch)) {
-                        // TODO 待测试！！
-                        let branch = tagBranch.split('publish/')[1];
-                        console.log(colors.blue('将config.version由', version, '替换为', branch));
-                        config.version = branch;
-                        let filename = path.join(CWDPATH, 'config.json');
-                        let data = JSON.stringify(config);
-                        fs.writeFile(filename, data, err => {
-                            if (!err) {
-                                console.log(colors.green('修改成功！'));
-                                return callback(err, config);
-                            } else {
-                                console.log(colors.red('config.json写入失败，请检查该文件'));
-                                return callback(err, false);
-                            }
-                        });
-                    } else {
-                        console.log(colors.yellow('请在publish分支下进行发布：publish/x.y.z；'));
-                        return callback(error, false);
-                    }
-                });
+                PublishByTag({ ...userConfig, cwdpath: CWDPATH }, tagBranch, callback);
             }
         } else {
             return callback(err, false);
