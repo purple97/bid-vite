@@ -6,11 +6,25 @@
  * @Description: 当开发环境请求带有@version的入口js时，重定向到移除@version/的路径
  */
 
-export default function (req, res, next) {
-    if (/\/@cdnhost[\s\S]+@version/g.test(req.path)) {
-        const filePath = req.path.replace(/\/@cdnhost[\s\S]+@version/g, '');
+const rx = /\/@cdnhost[\s\S]+@version/g;
+
+export function redirectMiddlewareByExpress(req, res, next) {
+    if (rx.test(req.path)) {
+        const filePath = req.path.replace(rx, '');
         res.redirect(filePath);
         return;
     }
     next();
 }
+
+export function redirectMiddlewareByKoa(ctx, next) {
+    const { req } = ctx;
+    if (rx.test(req.path)) {
+        const filePath = req.path.replace(rx, '');
+        this.redirect(filePath);
+        return;
+    }
+    next();
+}
+
+export default redirectMiddlewareByExpress;
